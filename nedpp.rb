@@ -40,33 +40,43 @@ class String
   end
 end
 
-def coord(n)
-  44 * ((n - 4).to_f) / 4
+def coord(n) # transform N++ coordinates into pixel coordinates
+  44 * n.to_f / 4
 end
 
-def parse_map(data: "", filename: nil)
+def parse_map(data: "", filename: nil, attract: false)
   file = !filename.nil? ? File.binread(filename) : data
-  size = file[4..7].reverse.hd # filesize
-  mode = file[12].reverse.hd # game mode: 0 = solo, 1 = coop, 2 = race, 4 = unset
-  title = file[38..165].split(//).delete_if{ |b| b == "\x00" }.join # map title
-  tiles = file[184..1149].split(//).map{ |b| b.hd }.each_slice(42).to_a # tile data
-  object_counts = file[1150..1229].scan(/../).map{ |s| s.reverse.hd } # object counts ordered by ID
-  objects = file[1230..-1].scan(/.{5}/m).map{ |o| o.chars.map{ |e| e.hd } } # object data ordered by ID
-  {tiles: tiles, objects: objects}
+  if !attract
+    mode = file[12].reverse.hd # game mode: 0 = solo, 1 = coop, 2 = race, 4 = unset
+    title = file[38..165].split(//).delete_if{ |b| b == "\x00" }.join
+    index = 182
+    author = ""
+  else
+    level_id = file[0..3].reverse.hd
+    title = file[30..157].split(//).delete_if{ |b| b == "\x00" }.join
+    index = file[159..-1].split(//).find_index("\x00") + 158
+    author = file[159..index]
+  end
+  tiles = file[index + 2 .. index + 967].split(//).map{ |b| b.hd }.each_slice(42).to_a # tile data
+  object_counts = file[index + 968 .. index + 1047].scan(/../).map{ |s| s.reverse.hd } # object counts ordered by ID
+  objects = file[index + 1048 .. -1].scan(/.{5}/m).map{ |o| o.chars.map{ |e| e.hd } } # object data ordered by ID
+  {title: title, author: author, tiles: tiles, objects: objects}
 end
 
 def parse_attract(data: "", filename: nil)
   file = !filename.nil? ? File.binread(filename) : attract
-  $map_length = file[0..3].reverse.hd
-  $demo_length = file[4..7].reverse.hd
-  $map_data = file[8 .. 8 + $map_length - 1]
-  $demo_data = file[8 + $map_length .. 8 + $map_length + $demo_length - 1]
-  return true
+  map_length = file[0..3].reverse.hd
+  demo_length = file[4..7].reverse.hd
+  map_data = file[8 .. 8 + map_length - 1]
+  demo_data = file[8 + map_length .. 8 + map_length + demo_length - 1]
+  map = parse_map(data: map_data, attract: true)
+  # demo = parse_demo(data: demo_data, attract: true) # no se si el attract hace falta, comparar esto con una replay normal
+  {title: map[:title], author: map[:author], tiles: map[:tiles], objects: map[:objects]}
 end
 
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
 # TODO: Sort objects so that the order in which they overlap coincides with N++ (e.g. bounce block should be the last one, probably)
-def generate_image(input: "orientation", output: "image")
+def generate_image(data: "", input: "orientation", output: "image", attract: false)
   tile = {}
   object = {}
   tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
@@ -77,10 +87,23 @@ def generate_image(input: "orientation", output: "image")
   object_images.each do |i|
     object[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/objects/" + i)
   end
-  image = ChunkyPNG::Image.new(1848, 1012, ChunkyPNG::Color.rgb(140,148,135))
-  map = parse_map(filename: input)
+  image = ChunkyPNG::Image.new(1936, 1100, ChunkyPNG::Color.rgb(140,148,135))
+  map = attract ? parse_attract(data: "", filename: input) : parse_map(data: "", filename: input)
   tiles = map[:tiles]
   objects = map[:objects]
+  objects.each do |o|
+    new_object = object[o[0]]
+    (1 .. o[3] / 2).each{ |i| new_object = new_object.rotate_clockwise }
+    image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
+  end
+  (0..43).each do |t|
+    if t <= 23
+      image.compose!(tile[1], 0, 44 * t)
+      image.compose!(tile[1], 44 * 43, 44 * t)
+    end
+    image.compose!(tile[1], 44 * t, 0)
+    image.compose!(tile[1], 44 * t, 44 * 24)
+  end
   tiles.each_with_index do |slice, row|
     slice.each_with_index do |t, column|
       if t == 0 || t == 1 # empty and full tiles
@@ -93,13 +116,8 @@ def generate_image(input: "orientation", output: "image")
         if (t - 2) % 4 >= 2 then new_tile = new_tile.flip_horizontally end
         if (t - 2) % 4 == 1 || (t - 2) % 4 == 2 then new_tile = new_tile.flip_vertically end
       end
-      image.compose!(new_tile, 44 * column, 44 * row)
+      image.compose!(new_tile, 44 + 44 * column, 44 + 44 * row)
     end
-  end
-  objects.each do |o|
-    new_object = object[o[0]]
-    (1 .. o[3] / 2).each{ |i| new_object = new_object.rotate_clockwise }
-    image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
   end
   image.save(output + ".png")
 end
