@@ -1,38 +1,42 @@
 require 'chunky_png'
 
-OBJECTS = {
-  0x00 => 'ninja',
-  0x01 => 'mine',
-  0x02 => 'gold',
-  0x03 => 'exit',
-  0x04 => 'exit switch',
-  0x05 => 'regular door',
-  0x06 => 'locked door',
-  0x07 => 'locked door switch',
-  0x08 => 'trap door',
-  0x09 => 'trap door switch',
-  0x0A => 'launch pad',
-  0x0B => 'one-way platform',
-  0x0C => 'chaingun drone',
-  0x0D => 'laser drone',
-  0x0E => 'zap drone',
-  0x0F => 'chase drone',
-  0x10 => 'floor guard',
-  0x11 => 'bounce block',
-  0x12 => 'rocket',
-  0x13 => 'gauss turret',
-  0x14 => 'thwump',
-  0x15 => 'toggle mine',
-  0x16 => 'evil ninja',
-  0x17 => 'laser turret',
-  0x18 => 'boost pad',
-  0x19 => 'deathball',
-  0x1A => 'micro drone',
-  0x1B => 'alt deathball',
-  0x1C => 'shove thwump'
+OBJECTS = { # 'pref' is the drawing preference when overlapping, the lower the better
+  0x00 => {name: 'ninja', pref: 4},
+  0x01 => {name: 'mine', pref: 22},
+  0x02 => {name: 'gold', pref: 21},
+  0x03 => {name: 'exit', pref: 25},
+  0x04 => {name: 'exit switch', pref: 20},
+  0x05 => {name: 'regular door', pref: 19},
+  0x06 => {name: 'locked door', pref: 28},
+  0x07 => {name: 'locked door switch', pref: 27},
+  0x08 => {name: 'trap door', pref: 29},
+  0x09 => {name: 'trap door switch', pref: 26},
+  0x0A => {name: 'launch pad', pref: 18},
+  0x0B => {name: 'one-way platform', pref: 24},
+  0x0C => {name: 'chaingun drone', pref: 16},
+  0x0D => {name: 'laser drone', pref: 17},
+  0x0E => {name: 'zap drone', pref: 15},
+  0x0F => {name: 'chase drone', pref: 14},
+  0x10 => {name: 'floor guard', pref: 13},
+  0x11 => {name: 'bounce block', pref: 3},
+  0x12 => {name: 'rocket', pref: 8},
+  0x13 => {name: 'gauss turret', pref: 9},
+  0x14 => {name: 'thwump', pref: 6},
+  0x15 => {name: 'toggle mine', pref: 23},
+  0x16 => {name: 'evil ninja', pref: 5},
+  0x17 => {name: 'laser turret', pref: 7},
+  0x18 => {name: 'boost pad', pref: 1},
+  0x19 => {name: 'deathball', pref: 10},
+  0x1A => {name: 'micro drone', pref: 12},
+  0x1B => {name: 'alt deathball', pref: 11},
+  0x1C => {name: 'shove thwump', pref: 2}
 }
-
-# Note: Map data header is different in "levels" files and "attract" files
+ROWS = 23
+COLUMNS = 42
+DIM = 44
+WIDTH = DIM * (COLUMNS + 2)
+HEIGHT = DIM * (ROWS + 2)
+COLOR = ChunkyPNG::Color.rgb(140,148,135)
 
 class String
   def hd # hex string to dec
@@ -40,10 +44,7 @@ class String
   end
 end
 
-def coord(n) # transform N++ coordinates into pixel coordinates
-  44 * n.to_f / 4
-end
-
+# Note: Map data header is different in "level" files and "attract" files
 def parse_map(data: "", filename: nil, attract: false)
   file = !filename.nil? ? File.binread(filename) : data
   if !attract
@@ -57,7 +58,7 @@ def parse_map(data: "", filename: nil, attract: false)
     index = file[159..-1].split(//).find_index("\x00") + 158
     author = file[159..index]
   end
-  tiles = file[index + 2 .. index + 967].split(//).map{ |b| b.hd }.each_slice(42).to_a # tile data
+  tiles = file[index + 2 .. index + 967].split(//).map{ |b| b.hd }.each_slice(COLUMNS).to_a # tile data
   object_counts = file[index + 968 .. index + 1047].scan(/../).map{ |s| s.reverse.hd } # object counts ordered by ID
   objects = file[index + 1048 .. -1].scan(/.{5}/m).map{ |o| o.chars.map{ |e| e.hd } } # object data ordered by ID
   {title: title, author: author, tiles: tiles, objects: objects}
@@ -74,8 +75,15 @@ def parse_attract(data: "", filename: nil)
   {title: map[:title], author: map[:author], tiles: map[:tiles], objects: map[:objects]}
 end
 
+def coord(n) # transform N++ coordinates into pixel coordinates
+  DIM * n.to_f / 4
+end
+
+def check_dimensions(image, x, y) # ensure image is within limits
+  x >= 0 && y >= 0 && x <= WIDTH - image.width && y <= HEIGHT - image.height
+end
+
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
-# TODO: Sort objects so that the order in which they overlap coincides with N++ (e.g. bounce block should be the last one, probably)
 def generate_image(data: "", input: "orientation", output: "image", attract: false)
   tile = {}
   object = {}
@@ -87,24 +95,26 @@ def generate_image(data: "", input: "orientation", output: "image", attract: fal
   object_images.each do |i|
     object[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/objects/" + i)
   end
-  image = ChunkyPNG::Image.new(1936, 1100, ChunkyPNG::Color.rgb(140,148,135))
+  image = ChunkyPNG::Image.new(WIDTH, HEIGHT, COLOR)
   map = attract ? parse_attract(data: "", filename: input) : parse_map(data: "", filename: input)
   tiles = map[:tiles]
-  objects = map[:objects]
-  objects.each do |o|
+  objects = map[:objects].sort_by{ |o| -OBJECTS[o[0]][:pref] }
+  objects.each do |o| # paint objects
     new_object = object[o[0]]
     (1 .. o[3] / 2).each{ |i| new_object = new_object.rotate_clockwise }
-    image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
-  end
-  (0..43).each do |t|
-    if t <= 23
-      image.compose!(tile[1], 0, 44 * t)
-      image.compose!(tile[1], 44 * 43, 44 * t)
+    if check_dimensions(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
+      image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
     end
-    image.compose!(tile[1], 44 * t, 0)
-    image.compose!(tile[1], 44 * t, 44 * 24)
   end
-  tiles.each_with_index do |slice, row|
+  (0 .. COLUMNS + 1).each do |t| # paint borders
+    if t <= ROWS
+      image.compose!(tile[1], 0, DIM * t)
+      image.compose!(tile[1], DIM * (COLUMNS + 1), DIM * t)
+    end
+    image.compose!(tile[1], DIM * t, 0)
+    image.compose!(tile[1], DIM * t, DIM * (ROWS + 1))
+  end
+  tiles.each_with_index do |slice, row| # paint tiles
     slice.each_with_index do |t, column|
       if t == 0 || t == 1 # empty and full tiles
         new_tile = tile[t]
@@ -116,7 +126,7 @@ def generate_image(data: "", input: "orientation", output: "image", attract: fal
         if (t - 2) % 4 >= 2 then new_tile = new_tile.flip_horizontally end
         if (t - 2) % 4 == 1 || (t - 2) % 4 == 2 then new_tile = new_tile.flip_vertically end
       end
-      image.compose!(new_tile, 44 + 44 * column, 44 + 44 * row)
+      image.compose!(new_tile, DIM + DIM * column, DIM + DIM * row)
     end
   end
   image.save(output + ".png")
