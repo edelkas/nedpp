@@ -44,19 +44,31 @@ class String
   end
 end
 
+def quantity(s)
+  s.scan(/../).map{ |b| b.reverse }.join.to_i(16)
+end
+
 # Note: Map data header is different in "level" files and "attract" files
-def parse_map(data: "", filename: nil, attract: false)
+def parse_map(data: "", filename: nil, type: :level)
   file = !filename.nil? ? File.binread(filename) : data
-  if !attract
+  case type
+  when :level
     mode = file[12].reverse.hd # game mode: 0 = solo, 1 = coop, 2 = race, 4 = unset
     title = file[38..165].split(//).delete_if{ |b| b == "\x00" }.join
     index = 182
     author = ""
-  else
+  when :attract
     level_id = file[0..3].reverse.hd
     title = file[30..157].split(//).delete_if{ |b| b == "\x00" }.join
     index = file[159..-1].split(//).find_index("\x00") + 158
     author = file[159..index]
+  when :old
+    title = file.split('#')[0][1..-1]
+    map = file.split("#")[1][8..-1]
+    tiles = map[0..1931].scan(/../).map{ |b| b.reverse.to_i(16) }
+    objects = map[1932..-1]
+    ninja_count = quantity(objects[0..3])
+    ninja = objects[4..7].scan(/.{4}/).map{ |g| g.scan(/../).map{ |b| b.reverse.to_i(16) } }
   end
   tiles = file[index + 2 .. index + 967].split(//).map{ |b| b.hd }.each_slice(COLUMNS).to_a # tile data
   object_counts = file[index + 968 .. index + 1047].scan(/../).map{ |s| s.reverse.hd } # object counts ordered by ID
@@ -70,7 +82,7 @@ def parse_attract(data: "", filename: nil)
   demo_length = file[4..7].reverse.hd
   map_data = file[8 .. 8 + map_length - 1]
   demo_data = file[8 + map_length .. 8 + map_length + demo_length - 1]
-  map = parse_map(data: map_data, attract: true)
+  map = parse_map(data: map_data, type: :attract)
   # demo = parse_demo(data: demo_data, attract: true) # no se si el attract hace falta, comparar esto con una replay normal
   {title: map[:title], author: map[:author], tiles: map[:tiles], objects: map[:objects]}
 end
