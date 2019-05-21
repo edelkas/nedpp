@@ -121,6 +121,7 @@ def parse_file(filename: "", type: "level")
   {title: title, author: author, tiles: map[:tiles], objects: map[:objects]}
 end
 
+# locked door and trap door switches are not counted in N++!
 def generate_map(tiles: [], objects: [], type: "new")
   case type
   when "new"
@@ -128,8 +129,18 @@ def generate_map(tiles: [], objects: [], type: "new")
     object_counts = ""
     object_data = ""
     OBJECTS.sort_by{ |id, entity| id }.each{ |id, entity|
-      object_counts << objects.select{ |o| o[0] == id }.size.to_s(16).rjust(4,"0").scan(/../).reverse.map{ |b| [b].pack('H*')[0] }.join
-      object_data << objects.select{ |o| o[0] == id }.map{ |o| o.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join }.join
+      if ![7,9].include?(id) # ignore door switches for counting
+        object_counts << objects.select{ |o| o[0] == id }.size.to_s(16).rjust(4,"0").scan(/../).reverse.map{ |b| [b].pack('H*')[0] }.join
+      else
+        object_counts << "\x00\x00"
+      end
+      if ![6,7,8,9].include?(id) # doors must once again be treated differently
+        object_data << objects.select{ |o| o[0] == id }.map{ |o| o.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join }.join
+      elsif [6,8].include?(id)
+        doors = objects.select{ |o| o[0] == id }.map{ |o| o.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join }
+        switches = objects.select{ |o| o[0] == id + 1 }.map{ |o| o.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join }
+        object_data << doors.zip(switches).flatten.join
+      end
     }
     map_data = tile_data + object_counts.ljust(80, "\x00") + object_data
   when "old"
