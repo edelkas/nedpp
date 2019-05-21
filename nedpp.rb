@@ -180,7 +180,7 @@ end
 
 def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from file", folder: "", type: "level")
   data = ""
-  if folder[-1] != "/" && !folder.empty? then folder.concat("/") end
+  if folder[-1] != "/" && !folder.empty? then folder = folder + "/" end
   case type
   when "level"
     data = ("\x00" * 4).force_encoding("ascii-8bit") # magic number ?
@@ -199,7 +199,7 @@ def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from f
     print("ERROR: Incorrect type (level, attract, old).")
     return 0
   end
-  File.open(folder + title, "w") do |f|
+  File.open(folder + title.tr("/", " ").tr("\\", " "), "w") do |f|
     f.write(data)
   end
 end
