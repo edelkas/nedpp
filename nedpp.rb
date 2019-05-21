@@ -1,7 +1,7 @@
 require 'chunky_png'
 
 # 'pref' is the drawing preference when overlapping, the lower the better
-# 'att' is the number of attributes they have, for parsing old format
+# 'att' is the number of attributes they have in the old format (in the new one it's always 5)
 # 'old' is the ID in the old format, '-1' if it didn't exist
 OBJECTS = {
   0x00 => {name: 'ninja', pref: 4, att: 2, old: 0},
@@ -9,12 +9,12 @@ OBJECTS = {
   0x02 => {name: 'gold', pref: 21, att: 2, old: 2},
   0x03 => {name: 'exit', pref: 25, att: 4, old: 3},
   0x04 => {name: 'exit switch', pref: 20, att: 0, old: -1},
-  0x05 => {name: 'regular door', pref: 19, att: 2, old: 4},
+  0x05 => {name: 'regular door', pref: 19, att: 3, old: 4},
   0x06 => {name: 'locked door', pref: 28, att: 5, old: 5},
   0x07 => {name: 'locked door switch', pref: 27, att: 0, old: -1},
   0x08 => {name: 'trap door', pref: 29, att: 5, old: 6},
   0x09 => {name: 'trap door switch', pref: 26, att: 0, old: -1},
-  0x0A => {name: 'launch pad', pref: 18, att: 4, old: 7},
+  0x0A => {name: 'launch pad', pref: 18, att: 3, old: 7},
   0x0B => {name: 'one-way platform', pref: 24, att: 3, old: 8},
   0x0C => {name: 'chaingun drone', pref: 16, att: 4, old: 9},
   0x0D => {name: 'laser drone', pref: 17, att: 4, old: 10},
@@ -85,6 +85,9 @@ def parse_map(data: "", type: "new")
     }
   end
   {tiles: tiles, objects: objects.sort_by{ |o| o[0] }}
+#rescue
+#  print("ERROR: Incorrect map data\n")
+#  return {tiles: [], objects: []}
 end
 
 # level - for files returned by the level editor (stored in "N++/levels")
@@ -121,6 +124,29 @@ def parse_file(filename: "", type: "level")
   {title: title, author: author, tiles: map[:tiles], objects: map[:objects]}
 end
 
+# files with multiple levels on them, probably only makes sense for old format
+def parse_multifile(filename: "", type: "old")
+  !filename.empty? ? file = File.binread(filename) : return
+  case type
+  when "old"
+    file.split("\n").map(&:strip).reject(&:empty?).map{ |m|
+      title = m.split('#')[0][1..-1] rescue ""
+      author = "Metanet Software"
+      map = parse_map(data: m.split("#")[1], type: "old") rescue {tiles: [], objects: []}
+      {title: title, author: author, tiles: map[:tiles], objects: map[:objects]}
+    }
+  else
+    print("ERROR: Incorrect type (old).")
+    return 0
+  end
+end
+
+def parse_folder(input: "", type: "level")
+  if input.empty? then input = Dir.pwd end
+  if input[-1] != "/" then input.concat("/") end
+  Dir.entries(input).select { |f| File.file?(f) }.map{ |f| parse_file(filename: input + f, type: type) }
+end
+
 # locked door and trap door switches are not counted in N++!
 def generate_map(tiles: [], objects: [], type: "new")
   case type
@@ -152,8 +178,9 @@ def generate_map(tiles: [], objects: [], type: "new")
   map_data
 end
 
-def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from file", type: "level")
+def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from file", folder: "", type: "level")
   data = ""
+  if folder[-1] != "/" && !folder.empty? then folder.concat("/") end
   case type
   when "level"
     data = ("\x00" * 4).force_encoding("ascii-8bit") # magic number ?
@@ -172,9 +199,18 @@ def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from f
     print("ERROR: Incorrect type (level, attract, old).")
     return 0
   end
-  File.open(title, "w") do |f|
+  File.open(folder + title, "w") do |f|
     f.write(data)
   end
+end
+
+def generate_folder(maps: [], folder: "generated maps", mode: "solo", type: "level", indexize: false)
+  Dir.mkdir(folder) unless File.exists?(folder)
+  padding = Math.log(maps.size,10).to_i + 1
+  maps.each_with_index{ |m, i|
+    title = indexize ? i.to_s.rjust(padding,"0") + " " + m[:title] : m[:title]
+    generate_file(tiles: m[:tiles], objects: m[:objects], title: title, mode: mode, type: type, folder: folder)
+  }
 end
 
 def coord(n) # transform N++ coordinates into pixel coordinates
@@ -186,7 +222,7 @@ def check_dimensions(image, x, y) # ensure image is within limits
 end
 
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
-def generate_image(data: "", input: "", output: "image", type: "level")
+def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", output: "image", type: "level")
   tile = {}
   object = {}
   tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
@@ -202,8 +238,12 @@ def generate_image(data: "", input: "", output: "image", type: "level")
     map = parse_file(filename: input, type: type)
   elsif !data.empty?
     map = parse_map(data: data, type: type)
+  elsif !tiles.empty? && !objects.empty?
+    map = {tiles: tiles, objects: objects}
+  elsif !level.empty? && level.key?(:tiles) && level.key?(:objects)
+    map = level
   else
-    print("ERROR: Introduce either an 'input' filename or map 'data'.")
+    print("ERROR: Introduce either an 'input' filename, or map 'data', or 'tiles' and 'objects', or a 'map' array of both.")
   end
   tiles = map[:tiles]
   objects = map[:objects].sort_by{ |o| -OBJECTS[o[0]][:pref] }
