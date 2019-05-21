@@ -82,9 +82,9 @@ def parse_map(data: "", type: "new")
         end
       }
       objs = objs[4 + 2 * quantity * type[:att]..-1]
-    };0
+    }
   end
-  {tiles: tiles, objects: objects}
+  {tiles: tiles, objects: objects.sort_by{ |o| o[0] }}
 end
 
 # level - for files returned by the level editor (stored in "N++/levels")
@@ -121,6 +121,51 @@ def parse_file(filename: "", type: "level")
   {title: title, author: author, tiles: map[:tiles], objects: map[:objects]}
 end
 
+def generate_map(tiles: [], objects: [], type: "new")
+  case type
+  when "new"
+    tile_data = tiles.flatten.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join
+    object_counts = ""
+    object_data = ""
+    OBJECTS.sort_by{ |id, entity| id }.each{ |id, entity|
+      object_counts << objects.select{ |o| o[0] == id }.size.to_s(16).rjust(4,"0").scan(/../).reverse.map{ |b| [b].pack('H*')[0] }.join
+      object_data << objects.select{ |o| o[0] == id }.map{ |o| o.map{ |b| [b.to_s(16).rjust(2,"0")].pack('H*')[0] }.join }.join
+    }
+    map_data = tile_data + object_counts.ljust(80, "\x00") + object_data
+  when "old"
+
+  else
+    print("ERROR: Incorrect type (new, old).")
+    return 0
+  end
+  map_data
+end
+
+def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from file", type: "level")
+  data = ""
+  case type
+  when "level"
+    data = ("\x00" * 4).force_encoding("ascii-8bit") # magic number ?
+    data << (1230 + 5 * objects.size).to_s(16).rjust(8,"0").scan(/../).reverse.map{ |b| [b].pack('H*')[0] }.join.force_encoding("ascii-8bit") # filesize
+    data << ("\xFF" * 4).force_encoding("ascii-8bit") # static data
+    data << (mode == "unset" ? "\x04" : (mode == "race" ? "\x02" : (mode == "coop" ? "\x01" : "\x00"))).force_encoding("ascii-8bit")
+    data << ("\x00" * 3 + "\x25" + "\x00" * 3 + "\xFF" * 4 + "\x00" * 14).force_encoding("ascii-8bit") # static data
+    data << title[0..126].ljust(128,"\x00").force_encoding("ascii-8bit") # map title
+    data << ("\x00" * 18).force_encoding("ascii-8bit") # static data
+    data << generate_map(tiles: tiles, objects: objects, type: "new").force_encoding("ascii-8bit") # map data
+  when "attract"
+
+  when "old"
+
+  else
+    print("ERROR: Incorrect type (level, attract, old).")
+    return 0
+  end
+  File.open(title, "w") do |f|
+    f.write(data)
+  end
+end
+
 def coord(n) # transform N++ coordinates into pixel coordinates
   DIM * n.to_f / 4
 end
@@ -130,7 +175,7 @@ def check_dimensions(image, x, y) # ensure image is within limits
 end
 
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
-def generate_image(data: "", input: "", output: "image", type: :level)
+def generate_image(data: "", input: "", output: "image", type: "level")
   tile = {}
   object = {}
   tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
