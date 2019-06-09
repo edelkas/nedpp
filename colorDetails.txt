@@ -1,0 +1,75 @@
+### Color list details
+Originally, each theme has a palette folder, each palette has one tga image
+per object, and each image has a horizontal sequence of 64x64 tiles, one for
+each differently colored portion of the object.
+
+The following is a list of tables. The first one contains the list of objects
+with their ID, name and the corresponding palette file. The second one specifies
+what each tile represents and the corresponding filename used in Ned++.
+
+Note: The switches for the locked and trap doors are included in the same
+palette as their corresponding doors. Toggle mines are also with mines.
+
+# Object ID | Object Name | Palette Filename
+00 | Ninja (4)      | ninja.tga
+01 | Mine           | entityMine.tga
+02 | Gold           | entityGold.tga
+03 | Exit door      | entityDoorExit.tga
+04 | Exit switch    | entityDoorExitSwitch.tga
+05 | Regular door   | entityDoorRegular.tga
+06 | Locked door    | entityDoorLocked.tga
+07 | Locked switch  | -
+08 | Trap door      | entityDoorTrap.tga
+09 | Trap switch    | -
+0A | Launchpad      | entityLaunchPad.tga
+0B | One-Way        | entityOneWayPlatform.tga
+0C | Chaingun drone | entityDroneChaingun.tga
+0D | Laser drone    | entityDroneLaser.tga
+0E | Zap drone      | entityDroneZap.tga
+0F | Chase drone    | entityDroneChaser.tga
+10 | Floor guard    | entityFloorGuard.tga
+11 | Bounce block   | entityBounceBlock.tga
+12 | Rocket turret  | entityRocket.tga
+13 | Gauss turret   | entityTurret.tga
+14 | Thwump         | entityThwomp.tga
+15 | Toggle mine    | entityMine.tga
+16 | Evil ninja     | entityEvilNinja.tga
+17 | Laser turret   | entityDualLaser.tga
+18 | Boost pad      | entityBoostPad.tga
+19 | Deathball      | entityBat.tga
+1A | Micro drone    | entityDroneZap.tga
+1B | Whiteball      | entityEyeBat.tga
+1C | Shove Thwump   | entityShoveThwomp.tga
+
+# Filename | Portion in the palette's order
+00-0 | Ninja 1
+00-0 | Ninja 2
+00-0 | Ninja 3
+00-0 | Ninja 4
+01-0 | Mine exterior
+01-1 | Mine interior
+01-2 | Untoggled mine
+01-3 | Toggling mine
+02-0 | Gold interior
+02-1 | Gold exterior
+02-2 | Gold shine
+03-0 | Closed door interior
+03-1 | Closed door borders
+03-2 | Opened door interior
+03-3 | Opened door details
+03-4 | ?
+03-5 | ?
+03-6 | ?
+03-7 | ?
+04-0 | border, deactivated
+04-1 | border, activated
+04-2 | center
+04-3 | ?
+04-4 | ?
+0A-0 | big pad
+0A-1 | small pad
+11-0 | Interior
+11-1 | Exterior
+19-0 | Inner circle
+19-1 | Middle circle
+19-2 | Outter circle
