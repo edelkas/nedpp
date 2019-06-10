@@ -1,39 +1,40 @@
 require 'chunky_png'
 include ChunkyPNG::Color
 
-# 'pref' is the drawing preference when overlapping, the lower the better
+# 'pref' is the drawing preference when for overlaps, the lower the better
 # 'att' is the number of attributes they have in the old format (in the new one it's always 5)
 # 'old' is the ID in the old format, '-1' if it didn't exist
+# 'pal' is the index at which the colors of the object start in the palette image
 OBJECTS = {
-  0x00 => {name: 'ninja', pref: 4, att: 2, old: 0},
-  0x01 => {name: 'mine', pref: 22, att: 2, old: 1},
-  0x02 => {name: 'gold', pref: 21, att: 2, old: 2},
-  0x03 => {name: 'exit', pref: 25, att: 4, old: 3},
-  0x04 => {name: 'exit switch', pref: 20, att: 0, old: -1},
-  0x05 => {name: 'regular door', pref: 19, att: 3, old: 4},
-  0x06 => {name: 'locked door', pref: 28, att: 5, old: 5},
-  0x07 => {name: 'locked door switch', pref: 27, att: 0, old: -1},
-  0x08 => {name: 'trap door', pref: 29, att: 5, old: 6},
-  0x09 => {name: 'trap door switch', pref: 26, att: 0, old: -1},
-  0x0A => {name: 'launch pad', pref: 18, att: 3, old: 7},
-  0x0B => {name: 'one-way platform', pref: 24, att: 3, old: 8},
-  0x0C => {name: 'chaingun drone', pref: 16, att: 4, old: 9},
-  0x0D => {name: 'laser drone', pref: 17, att: 4, old: 10},
-  0x0E => {name: 'zap drone', pref: 15, att: 4, old: 11},
-  0x0F => {name: 'chase drone', pref: 14, att: 4, old: 12},
-  0x10 => {name: 'floor guard', pref: 13, att: 2, old: 13},
-  0x11 => {name: 'bounce block', pref: 3, att: 2, old: 14},
-  0x12 => {name: 'rocket', pref: 8, att: 2, old: 15},
-  0x13 => {name: 'gauss turret', pref: 9, att: 2, old: 16},
-  0x14 => {name: 'thwump', pref: 6, att: 3, old: 17},
-  0x15 => {name: 'toggle mine', pref: 23, att: 2, old: 18},
-  0x16 => {name: 'evil ninja', pref: 5, att: 2, old: 19},
-  0x17 => {name: 'laser turret', pref: 7, att: 4, old: 20},
-  0x18 => {name: 'boost pad', pref: 1, att: 2, old: 21},
-  0x19 => {name: 'deathball', pref: 10, att: 2, old: 22},
-  0x1A => {name: 'micro drone', pref: 12, att: 4, old: 23},
-  0x1B => {name: 'alt deathball', pref: 11, att: 2, old: 24},
-  0x1C => {name: 'shove thwump', pref: 2, att: 2, old: 25}
+  0x00 => {name: 'ninja',              pref:  4, att: 2, old:  0, pal:  0},
+  0x01 => {name: 'mine',               pref: 22, att: 2, old:  1, pal:  4},
+  0x02 => {name: 'gold',               pref: 21, att: 2, old:  2, pal:  8},
+  0x03 => {name: 'exit',               pref: 25, att: 4, old:  3, pal: 11},
+  0x04 => {name: 'exit switch',        pref: 20, att: 0, old: -1, pal: 19},
+  0x05 => {name: 'regular door',       pref: 19, att: 3, old:  4, pal: 24},
+  0x06 => {name: 'locked door',        pref: 28, att: 5, old:  5, pal: 25},
+  0x07 => {name: 'locked door switch', pref: 27, att: 0, old: -1, pal: 27},
+  0x08 => {name: 'trap door',          pref: 29, att: 5, old:  6, pal: 33},
+  0x09 => {name: 'trap door switch',   pref: 26, att: 0, old: -1, pal: 35},
+  0x0A => {name: 'launch pad',         pref: 18, att: 3, old:  7, pal: 41},
+  0x0B => {name: 'one-way platform',   pref: 24, att: 3, old:  8, pal: 43},
+  0x0C => {name: 'chaingun drone',     pref: 16, att: 4, old:  9, pal: 45},
+  0x0D => {name: 'laser drone',        pref: 17, att: 4, old: 10, pal: 47},
+  0x0E => {name: 'zap drone',          pref: 15, att: 4, old: 11, pal: 51},
+  0x0F => {name: 'chase drone',        pref: 14, att: 4, old: 12, pal: 53},
+  0x10 => {name: 'floor guard',        pref: 13, att: 2, old: 13, pal: 55},
+  0x11 => {name: 'bounce block',       pref:  3, att: 2, old: 14, pal: 57},
+  0x12 => {name: 'rocket',             pref:  8, att: 2, old: 15, pal: 59},
+  0x13 => {name: 'gauss turret',       pref:  9, att: 2, old: 16, pal: 63},
+  0x14 => {name: 'thwump',             pref:  6, att: 3, old: 17, pal: 68},
+  0x15 => {name: 'toggle mine',        pref: 23, att: 2, old: 18, pal:  6},
+  0x16 => {name: 'evil ninja',         pref:  5, att: 2, old: 19, pal: 71},
+  0x17 => {name: 'laser turret',       pref:  7, att: 4, old: 20, pal: 73},
+  0x18 => {name: 'boost pad',          pref:  1, att: 2, old: 21, pal: 75},
+  0x19 => {name: 'deathball',          pref: 10, att: 2, old: 22, pal: 77},
+  0x1A => {name: 'micro drone',        pref: 12, att: 4, old: 23, pal: 51},
+  0x1B => {name: 'alt deathball',      pref: 11, att: 2, old: 24, pal: 80},
+  0x1C => {name: 'shove thwump',       pref:  2, att: 2, old: 25, pal: 82}
 }
 ROWS = 23
 COLUMNS = 42

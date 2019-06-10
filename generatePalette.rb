@@ -10,10 +10,10 @@ names = ["ninja", "entityMine", "entityGold", "entityDoorExit",
   "entityDoorTrap", "entityLaunchPad", "entityOneWayPlatform",
   "entityDroneChaingun", "entityDroneLaser", "entityDroneZap",
   "entityDroneChaser", "entityFloorGuard", "entityBounceBlock",
-  "entityRocket", "entityTurret", "entityThwomp", "entityMine",
-  "entityEvilNinja", "entityDualLaser", "entityBoostPad", "entityBat",
+  "entityRocket", "entityTurret", "entityThwomp", "entityEvilNinja",
+  "entityDualLaser", "entityBoostPad", "entityBat",
   "entityEyeBat", "entityShoveThwomp"].map{ |n| n + ".tga" }
-output = ChunkyPNG::Image.new(89, palettes.size, WHITE)
+output = ChunkyPNG::Image.new(85, palettes.size, WHITE)
 palettes.each_with_index{ |palette, y|
   x = 0
   names.each{ |name|

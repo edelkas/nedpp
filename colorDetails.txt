@@ -4,42 +4,44 @@ per object, and each image has a horizontal sequence of 64x64 tiles, one for
 each differently colored portion of the object.
 
 The following is a list of tables. The first one contains the list of objects
-with their ID, name and the corresponding palette file. The second one specifies
-what each tile represents and the corresponding filename used in Ned++.
+with their ID, name, number of different colors, and the corresponding palette
+file. The second one specifies what each file represents and the corresponding
+filename used in Ned++.
 
 Note: The switches for the locked and trap doors are included in the same
-palette as their corresponding doors. Toggle mines are also with mines.
+palette as their corresponding doors. Toggle mines are also with mines,
+and micro drones use the same palette as zap drones.
 
-# Object ID | Object Name | Palette Filename
-00 | Ninja (4)      | ninja.tga
-01 | Mine           | entityMine.tga
-02 | Gold           | entityGold.tga
-03 | Exit door      | entityDoorExit.tga
-04 | Exit switch    | entityDoorExitSwitch.tga
-05 | Regular door   | entityDoorRegular.tga
-06 | Locked door    | entityDoorLocked.tga
-07 | Locked switch  | -
-08 | Trap door      | entityDoorTrap.tga
-09 | Trap switch    | -
-0A | Launchpad      | entityLaunchPad.tga
-0B | One-Way        | entityOneWayPlatform.tga
-0C | Chaingun drone | entityDroneChaingun.tga
-0D | Laser drone    | entityDroneLaser.tga
-0E | Zap drone      | entityDroneZap.tga
-0F | Chase drone    | entityDroneChaser.tga
-10 | Floor guard    | entityFloorGuard.tga
-11 | Bounce block   | entityBounceBlock.tga
-12 | Rocket turret  | entityRocket.tga
-13 | Gauss turret   | entityTurret.tga
-14 | Thwump         | entityThwomp.tga
-15 | Toggle mine    | entityMine.tga
-16 | Evil ninja     | entityEvilNinja.tga
-17 | Laser turret   | entityDualLaser.tga
-18 | Boost pad      | entityBoostPad.tga
-19 | Deathball      | entityBat.tga
-1A | Micro drone    | entityDroneZap.tga
-1B | Whiteball      | entityEyeBat.tga
-1C | Shove Thwump   | entityShoveThwomp.tga
+# Object ID | Object Name | Colors | Palette Filename
+00 | Ninja (4)      | 4 | ninja.tga
+01 | Mine           | 4 | entityMine.tga
+02 | Gold           | 3 | entityGold.tga
+03 | Exit door      | 8 | entityDoorExit.tga
+04 | Exit switch    | 5 | entityDoorExitSwitch.tga
+05 | Regular door   | 1 | entityDoorRegular.tga
+06 | Locked door    | 8 | entityDoorLocked.tga
+07 | Locked switch  | - | -
+08 | Trap door      | 8 | entityDoorTrap.tga
+09 | Trap switch    | - | -
+0A | Launchpad      | 2 | entityLaunchPad.tga
+0B | One-Way        | 2 | entityOneWayPlatform.tga
+0C | Chaingun drone | 2 | entityDroneChaingun.tga
+0D | Laser drone    | 4 | entityDroneLaser.tga
+0E | Zap drone      | 2 | entityDroneZap.tga
+0F | Chaser drone   | 2 | entityDroneChaser.tga
+10 | Floor guard    | 2 | entityFloorGuard.tga
+11 | Bounce block   | 2 | entityBounceBlock.tga
+12 | Rocket turret  | 4 | entityRocket.tga
+13 | Gauss turret   | 5 | entityTurret.tga
+14 | Thwump         | 3 | entityThwomp.tga
+15 | Toggle mine    | - | -
+16 | Evil ninja     | 2 | entityEvilNinja.tga
+17 | Laser turret   | 2 | entityDualLaser.tga
+18 | Boost pad      | 2 | entityBoostPad.tga
+19 | Deathball      | 3 | entityBat.tga
+1A | Micro drone    | - | -
+1B | Whiteball      | 2 | entityEyeBat.tga
+1C | Shove Thwump   | 3 | entityShoveThwomp.tga
 
 # Filename | Portion in the palette's order
 00-0 | Ninja 1
@@ -66,6 +68,22 @@ palette as their corresponding doors. Toggle mines are also with mines.
 04-2 | center
 04-3 | ?
 04-4 | ?
+06-0 | Door bar
+06-1 | Door center
+07-0 | Switch button, untoggled
+07-1 | Switch border, untoggled
+07-2 | Switch button, toggled
+07-3 | Switch border, toggled
+07-4 | Switch background, untoggled
+07-5 | Switch background, toggled
+08-0 | Trap door bar
+08-1 | Trap door bulges
+09-0 | 
+09-1 | 
+09-2 | Switch border, untoggled
+09-3 | Switch border, toggled
+09-4 | Switch background, untoggled
+09-5 | Switch background, toggled
 0A-0 | big pad
 0A-1 | small pad
 11-0 | Interior
