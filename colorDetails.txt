@@ -63,11 +63,12 @@ and micro drones use the same palette as zap drones.
 03-5 | ?
 03-6 | ?
 03-7 | ?
-04-0 | border, deactivated
-04-1 | border, activated
-04-2 | center
-04-3 | ?
-04-4 | ?
+04-0 | Border, untoggled
+04-1 | Border, toggled
+04-2 | Center
+04-3 | Background, untoggled
+04-4 | Background, toggled
+05-0 | Door
 06-0 | Door bar
 06-1 | Door center
 07-0 | Switch button, untoggled
@@ -78,8 +79,8 @@ and micro drones use the same palette as zap drones.
 07-5 | Switch background, toggled
 08-0 | Trap door bar
 08-1 | Trap door bulges
-09-0 | 
-09-1 | 
+09-0 | ?
+09-1 | ?
 09-2 | Switch border, untoggled
 09-3 | Switch border, toggled
 09-4 | Switch background, untoggled
