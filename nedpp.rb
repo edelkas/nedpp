@@ -305,6 +305,10 @@ end
 
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
 def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", output: "image", type: "level", theme: "vasquez")
+  if !THEMES.include?(theme)
+    print("Invalid theme! ")
+    return
+  end
   tile = {}
   tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
   tile_images.each do |i|
@@ -328,6 +332,7 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
     map = level
   else
     print("ERROR: Introduce either an 'input' filename, or map 'data', or 'tiles' and 'objects', or a 'map' array of both.")
+    return
   end
   tiles = map[:tiles]
   objects = map[:objects].sort_by{ |o| -OBJECTS[o[0]][:pref] }
