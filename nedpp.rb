@@ -273,17 +273,17 @@ end
 
 # This was used to create the initial masks
 def create_masks(object_id, palette_id, tolerance = 0.1)
-  image = ChunkyPNG::Image.from_file("images/objects/%02i.png" % [object_id.to_s(16)])
+  image = ChunkyPNG::Image.from_file("images/objects/%s.png" % [object_id.to_s(16).upcase.rjust(2, "0")])
   index_a = OBJECTS[object_id][:pal]
-  index_b = OBJECTS.map{ |k, v| v[:pal] }.select{ |i| i > index_a }.sort[0]
+  index_b = OBJECTS.map{ |k, v| v[:pal] }.select{ |i| i > index_a }.sort[0] || PALETTE.width
   masks = (index_a .. index_b - 1).map{ |i| mask(image, PALETTE[i, palette_id], BLACK, tolerance) }
-  masks.each_with_index{ |m, i| m.save("images/object_layers/" + object_id.to_s(16) + "-" + i.to_s + ".png") }
+  masks.each_with_index{ |m, i| m.save("images/object_layers/" + object_id.to_s(16).upcase.rjust(2, "0") + "-" + i.to_s + ".png") }
   return true
 end
 
 # The following two methods are used for theme generation
 def mask(image, before, after, tolerance = 0.5)
-  new_image = ChunkyPNG::Image.new(DIM, DIM, TRANSPARENT)
+  new_image = ChunkyPNG::Image.new(48, 48, TRANSPARENT)
   image.width.times{ |x|
     image.height.times{ |y|
       score = euclidean_distance_rgba(image[x,y], before).to_f / MAX_EUCLIDEAN_DISTANCE_RGBA
@@ -294,7 +294,7 @@ def mask(image, before, after, tolerance = 0.5)
 end
 
 def generate_object(object_id, palette_id)
-  parts = Dir.entries("images/object_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase + "-" }
+  parts = Dir.entries("images/object_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }
   masks = parts.map{ |part| [part[-5], ChunkyPNG::Image.from_file("images/object_layers/" + part)] }
   images = masks.map{ |mask| mask(mask[1], BLACK, PALETTE[OBJECTS[object_id][:pal] + mask[0].to_i, palette_id]) }
   output = ChunkyPNG::Image.new(DIM, DIM, TRANSPARENT)

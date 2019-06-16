@@ -5,8 +5,8 @@ each differently colored portion of the object.
 
 The following is a list of tables. The first one contains the list of objects
 with their ID, name, number of different colors, and the corresponding palette
-file. The second one specifies what each file represents and the corresponding
-filename used in Ned++.
+file. The second one specifies what each mask color represents and the
+corresponding filename used in Ned++ (only some are used).
 
 Note: The switches for the locked and trap doors are included in the same
 palette as their corresponding doors. Toggle mines are also with mines,
@@ -45,13 +45,11 @@ and micro drones use the same palette as zap drones.
 
 # Filename | Portion in the palette's order
 00-0 | Ninja 1
-00-0 | Ninja 2
-00-0 | Ninja 3
-00-0 | Ninja 4
+00-1 | Ninja 2
+00-2 | Ninja 3
+00-3 | Ninja 4
 01-0 | Mine exterior
 01-1 | Mine interior
-01-2 | Untoggled mine
-01-3 | Toggling mine
 02-0 | Gold interior
 02-1 | Gold exterior
 02-2 | Gold shine
@@ -85,10 +83,51 @@ and micro drones use the same palette as zap drones.
 09-3 | Switch border, toggled
 09-4 | Switch background, untoggled
 09-5 | Switch background, toggled
-0A-0 | big pad
-0A-1 | small pad
-11-0 | Interior
-11-1 | Exterior
-19-0 | Inner circle
-19-1 | Middle circle
-19-2 | Outter circle
+0A-0 | Big pad
+0A-1 | Small pad
+0B-0 | Long platform
+0B-1 | Short platform
+0C-0 | Chaingun drone background
+0C-1 | Chaingun drone border
+0D-0 | Laser drone interior, firing. Also, laser 1.
+0D-1 | Laser drone laser 2.
+0D-2 | Laser drone border.
+0D-3 | Laser drone aiming line.
+0E-0 | Zap drone background.
+0E-1 | Zap drone border.
+0F-0 | Chaser drone background.
+0F-1 | Chaser drone border.
+10-0 | Floorguard main color.
+10-1 | Floorguard eye.
+11-0 | Bounceblock interior.
+11-1 | Bounceblock border.
+12-0 | Rocket turret center.
+12-1 | Rocket turret border
+12-2 | Rocket color.
+12-3 | Rocket fumes.
+13-0 | Gauss interior.
+13-1 | Gauss border.
+13-2 | Gauss aiming cross.
+13-3 | Gauss bullet.
+13-4 | Gauss squiggly lines.
+14-0 | Thwump border.
+14-1 | Thwump interior.
+14-2 | Thwump ray.
+15-0 | Toggle mine.
+15-1 | Toggle mine activating.
+16-0 | Evil ninja spawn.
+16-1 | Evil ninja.
+17-0 | Laser turrets turret.
+17-1 | Laser turrets laser.
+18-0 | Boost pad, inactive.
+18-1 | Boost pad, active.
+19-0 | Deathball inner circle
+19-1 | Deathball middle circle
+19-2 | Deathball outter circle
+1A-0 | Microdrone interior.
+1A-1 | Microdrone border.
+1B-0 | Whiteball.
+1B-1 | Whiteball.
+1C-0 | Shove thwump interior.
+1C-1 | Shove thwump ray.
+1C-2 | Shove thwump armor.
