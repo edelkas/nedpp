@@ -283,7 +283,7 @@ end
 
 # The following two methods are used for theme generation
 def mask(image, before, after, tolerance = 0.5)
-  new_image = ChunkyPNG::Image.new(48, 48, TRANSPARENT)
+  new_image = ChunkyPNG::Image.new(image.width, image.height, TRANSPARENT)
   image.width.times{ |x|
     image.height.times{ |y|
       score = euclidean_distance_rgba(image[x,y], before).to_f / MAX_EUCLIDEAN_DISTANCE_RGBA
@@ -297,23 +297,26 @@ def generate_object(object_id, palette_id)
   parts = Dir.entries("images/object_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }
   masks = parts.map{ |part| [part[-5], ChunkyPNG::Image.from_file("images/object_layers/" + part)] }
   images = masks.map{ |mask| mask(mask[1], BLACK, PALETTE[OBJECTS[object_id][:pal] + mask[0].to_i, palette_id]) }
-  output = ChunkyPNG::Image.new(DIM, DIM, TRANSPARENT)
+  dims = [ [DIM, *images.map{ |i| i.width }].max, [DIM, *images.map{ |i| i.height }].max ]
+  output = ChunkyPNG::Image.new(*dims, TRANSPARENT)
   result = images.each{ |image| output.compose!(image, 0, 0) }
-  output.save("test.png")
+  output
 end
 
 # TODO: For diagonals, I can't rotate 45º, so get new pictures or new library
 def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", output: "image", type: "level", theme: "vasquez")
   tile = {}
-  object = {}
   tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
-  object_images = Dir.entries("images/objects").reject{ |f| f == "." || f == ".." }
   tile_images.each do |i|
     tile[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/tiles/" + i)
   end
-  object_images.each do |i|
-    object[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/objects/" + i)
-  end
+  object = OBJECTS.keys.map{ |o| [o, generate_object(o, THEMES.index(theme))] }.to_h
+  # PRE-THEMES CODE
+  #object = {}
+  #object_images = Dir.entries("images/objects").reject{ |f| f == "." || f == ".." }
+  #object_images.each do |i|
+  #  object[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/objects/" + i)
+  #end
   image = ChunkyPNG::Image.new(WIDTH, HEIGHT, COLOR)
   if !input.empty?
     map = parse_file(filename: input, type: type)
@@ -328,8 +331,6 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
   end
   tiles = map[:tiles]
   objects = map[:objects].sort_by{ |o| -OBJECTS[o[0]][:pref] }
-  # CODE FOR IMPLEMENTING COLOR THEMES
-  # object_images = objects.map{ |o| o[0] }.uniq.map{ |o| generate_object(o, THEMES.index(:theme)) }
   objects.each do |o| # paint objects
     new_object = object[o[0]]
     (1 .. o[3] / 2).each{ |i| new_object = new_object.rotate_clockwise }
