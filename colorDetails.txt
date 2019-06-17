@@ -6,7 +6,8 @@ each differently colored portion of the object.
 The following is a list of tables. The first one contains the list of objects
 with their ID, name, number of different colors, and the corresponding palette
 file. The second one specifies what each mask color represents and the
-corresponding filename used in Ned++ (only some are used).
+corresponding filename used in Ned++ (only some are used). The third one
+specifies the borders of each tile, for drawing purposes.
 
 Note: The switches for the locked and trap doors are included in the same
 palette as their corresponding doors. Toggle mines are also with mines,
@@ -42,6 +43,7 @@ and micro drones use the same palette as zap drones.
 1A | Micro drone    | - | -
 1B | Whiteball      | 2 | entityEyeBat.tga
 1C | Shove Thwump   | 3 | entityShoveThwomp.tga
+BA | Background     | 6 | background.tga
 
 # Filename | Portion in the palette's order
 00-0 | Ninja 1
@@ -131,3 +133,56 @@ and micro drones use the same palette as zap drones.
 1C-0 | Shove thwump interior.
 1C-1 | Shove thwump ray.
 1C-2 | Shove thwump armor.
+BA-0 | Tile interior.
+BA-1 | Tile border.
+BA-2 | Background.
+BA-3 | ?
+BA-4 | ?
+BA-5 | ??
+
+# Tile borders
+
+00 | 00000000
+01 | 11111111
+
+02 | 10000111
+03 | 11100001
+04 | 01111000
+05 | 00011110
+
+06 | 00001111
+07 | 11000011
+08 | 11110000
+09 | 00111100
+
+0A | 00001111
+0B | 11000011
+0C | 11110000
+0D | 00111100
+
+0E | 00001111
+0F | 11000011
+10 | 11110000
+11 | 00111100
+
+12 | 00000111
+13 | 10000011
+14 | 01110000
+15 | 00111000
+
+16 | 10001111
+17 | 11000111
+18 | 11111000
+19 | 01111100
+
+1A | 00001110
+1B | 11000001
+1C | 11100000
+1D | 00011100
+
+1E | 00011111
+1F | 11100011
+20 | 11110001
+21 | 00111110
+
+00000000111111111000011111100001011110000001111000001111110000111111000000111100000011111100001111110000001111000000111111000011111100000011110000000111100000110111000000111000100011111100011111111000011111000000111011000001111000000001110000011111111000111111000100111110

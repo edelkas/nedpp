@@ -6,7 +6,7 @@ include ChunkyPNG::Color
 dir = '.steam/steam/steamapps/common/N++/NPP/Palettes'
 palettes = Dir.entries(dir).reject{ |f| f == '.' || f == '..' }.sort_by(&:downcase)
 print(palettes.to_s)
-names = ["ninja", "entityMine", "entityGold", "entityDoorExit",
+names = ["background", "ninja", "entityMine", "entityGold", "entityDoorExit",
   "entityDoorExitSwitch", "entityDoorRegular", "entityDoorLocked",
   "entityDoorTrap", "entityLaunchPad", "entityOneWayPlatform",
   "entityDroneChaingun", "entityDroneLaser", "entityDroneZap",
@@ -14,7 +14,7 @@ names = ["ninja", "entityMine", "entityGold", "entityDoorExit",
   "entityRocket", "entityTurret", "entityThwomp", "entityEvilNinja",
   "entityDualLaser", "entityBoostPad", "entityBat",
   "entityEyeBat", "entityShoveThwomp"].map{ |n| n + ".tga" }
-output = ChunkyPNG::Image.new(85, palettes.size, WHITE)
+output = ChunkyPNG::Image.new(91, palettes.size, WHITE)
 palettes.each_with_index{ |palette, y|
   x = 0
   names.each{ |name|

@@ -6,35 +6,35 @@ include ChunkyPNG::Color
 # 'old' is the ID in the old format, '-1' if it didn't exist
 # 'pal' is the index at which the colors of the object start in the palette image
 OBJECTS = {
-  0x00 => {name: 'ninja',              pref:  4, att: 2, old:  0, pal:  0},
-  0x01 => {name: 'mine',               pref: 22, att: 2, old:  1, pal:  4},
-  0x02 => {name: 'gold',               pref: 21, att: 2, old:  2, pal:  8},
-  0x03 => {name: 'exit',               pref: 25, att: 4, old:  3, pal: 11},
-  0x04 => {name: 'exit switch',        pref: 20, att: 0, old: -1, pal: 19},
-  0x05 => {name: 'regular door',       pref: 19, att: 3, old:  4, pal: 24},
-  0x06 => {name: 'locked door',        pref: 28, att: 5, old:  5, pal: 25},
-  0x07 => {name: 'locked door switch', pref: 27, att: 0, old: -1, pal: 27},
-  0x08 => {name: 'trap door',          pref: 29, att: 5, old:  6, pal: 33},
-  0x09 => {name: 'trap door switch',   pref: 26, att: 0, old: -1, pal: 35},
-  0x0A => {name: 'launch pad',         pref: 18, att: 3, old:  7, pal: 41},
-  0x0B => {name: 'one-way platform',   pref: 24, att: 3, old:  8, pal: 43},
-  0x0C => {name: 'chaingun drone',     pref: 16, att: 4, old:  9, pal: 45},
-  0x0D => {name: 'laser drone',        pref: 17, att: 4, old: 10, pal: 47},
-  0x0E => {name: 'zap drone',          pref: 15, att: 4, old: 11, pal: 51},
-  0x0F => {name: 'chase drone',        pref: 14, att: 4, old: 12, pal: 53},
-  0x10 => {name: 'floor guard',        pref: 13, att: 2, old: 13, pal: 55},
-  0x11 => {name: 'bounce block',       pref:  3, att: 2, old: 14, pal: 57},
-  0x12 => {name: 'rocket',             pref:  8, att: 2, old: 15, pal: 59},
-  0x13 => {name: 'gauss turret',       pref:  9, att: 2, old: 16, pal: 63},
-  0x14 => {name: 'thwump',             pref:  6, att: 3, old: 17, pal: 68},
-  0x15 => {name: 'toggle mine',        pref: 23, att: 2, old: 18, pal:  6},
-  0x16 => {name: 'evil ninja',         pref:  5, att: 2, old: 19, pal: 71},
-  0x17 => {name: 'laser turret',       pref:  7, att: 4, old: 20, pal: 73},
-  0x18 => {name: 'boost pad',          pref:  1, att: 2, old: 21, pal: 75},
-  0x19 => {name: 'deathball',          pref: 10, att: 2, old: 22, pal: 77},
-  0x1A => {name: 'micro drone',        pref: 12, att: 4, old: 23, pal: 51},
-  0x1B => {name: 'alt deathball',      pref: 11, att: 2, old: 24, pal: 80},
-  0x1C => {name: 'shove thwump',       pref:  2, att: 2, old: 25, pal: 82}
+  0x00 => {name: 'ninja',              pref:  4, att: 2, old:  0, pal:  6},
+  0x01 => {name: 'mine',               pref: 22, att: 2, old:  1, pal: 10},
+  0x02 => {name: 'gold',               pref: 21, att: 2, old:  2, pal: 14},
+  0x03 => {name: 'exit',               pref: 25, att: 4, old:  3, pal: 17},
+  0x04 => {name: 'exit switch',        pref: 20, att: 0, old: -1, pal: 25},
+  0x05 => {name: 'regular door',       pref: 19, att: 3, old:  4, pal: 30},
+  0x06 => {name: 'locked door',        pref: 28, att: 5, old:  5, pal: 31},
+  0x07 => {name: 'locked door switch', pref: 27, att: 0, old: -1, pal: 33},
+  0x08 => {name: 'trap door',          pref: 29, att: 5, old:  6, pal: 39},
+  0x09 => {name: 'trap door switch',   pref: 26, att: 0, old: -1, pal: 41},
+  0x0A => {name: 'launch pad',         pref: 18, att: 3, old:  7, pal: 47},
+  0x0B => {name: 'one-way platform',   pref: 24, att: 3, old:  8, pal: 49},
+  0x0C => {name: 'chaingun drone',     pref: 16, att: 4, old:  9, pal: 51},
+  0x0D => {name: 'laser drone',        pref: 17, att: 4, old: 10, pal: 53},
+  0x0E => {name: 'zap drone',          pref: 15, att: 4, old: 11, pal: 57},
+  0x0F => {name: 'chase drone',        pref: 14, att: 4, old: 12, pal: 59},
+  0x10 => {name: 'floor guard',        pref: 13, att: 2, old: 13, pal: 61},
+  0x11 => {name: 'bounce block',       pref:  3, att: 2, old: 14, pal: 63},
+  0x12 => {name: 'rocket',             pref:  8, att: 2, old: 15, pal: 65},
+  0x13 => {name: 'gauss turret',       pref:  9, att: 2, old: 16, pal: 69},
+  0x14 => {name: 'thwump',             pref:  6, att: 3, old: 17, pal: 74},
+  0x15 => {name: 'toggle mine',        pref: 23, att: 2, old: 18, pal: 12},
+  0x16 => {name: 'evil ninja',         pref:  5, att: 2, old: 19, pal: 77},
+  0x17 => {name: 'laser turret',       pref:  7, att: 4, old: 20, pal: 79},
+  0x18 => {name: 'boost pad',          pref:  1, att: 2, old: 21, pal: 81},
+  0x19 => {name: 'deathball',          pref: 10, att: 2, old: 22, pal: 83},
+  0x1A => {name: 'micro drone',        pref: 12, att: 4, old: 23, pal: 57},
+  0x1B => {name: 'alt deathball',      pref: 11, att: 2, old: 24, pal: 86},
+  0x1C => {name: 'shove thwump',       pref:  2, att: 2, old: 25, pal: 88}
 }
 THEMES = ["acid", "airline", "argon", "autumn", "BASIC", "berry", "birthday cake",
   "bloodmoon", "blueprint", "bordeaux", "brink", "cacao", "champagne", "chemical",
@@ -54,7 +54,7 @@ THEMES = ["acid", "airline", "argon", "autumn", "BASIC", "berry", "birthday cake
   "TR-808", "tycho CUT", "vasquez", "vectrex", "vintage", "virtual", "vivid", "void",
   "waka", "witchy", "wizard", "wyvern", "xenon", "yeti"]
 PALETTE = ChunkyPNG::Image.from_file('palette.png')
-COLOR = ChunkyPNG::Color.rgb(140,148,135) # vasquez background
+BORDERS = "100FF87E1781E0FC3F03C0FC3F03C0FC3F03C078370388FC7F87C0EC1E01C1FE3F13E"
 ROWS = 23
 COLUMNS = 42
 DIM = 44
@@ -293,13 +293,13 @@ def mask(image, before, after, tolerance = 0.5)
   new_image
 end
 
-def generate_object(object_id, palette_id)
-  parts = Dir.entries("images/object_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }
-  masks = parts.map{ |part| [part[-5], ChunkyPNG::Image.from_file("images/object_layers/" + part)] }
-  images = masks.map{ |mask| mask(mask[1], BLACK, PALETTE[OBJECTS[object_id][:pal] + mask[0].to_i, palette_id]) }
+def generate_object(object_id, palette_id, object = true)
+  parts = Dir.entries("images/#{object ? "object" : "tile"}_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }
+  masks = parts.map{ |part| [part[-5], ChunkyPNG::Image.from_file("images/#{object ? "object" : "tile"}_layers/" + part)] }
+  images = masks.map{ |mask| mask(mask[1], BLACK, PALETTE[(object ? OBJECTS[object_id][:pal] : 0) + mask[0].to_i, palette_id]) }
   dims = [ [DIM, *images.map{ |i| i.width }].max, [DIM, *images.map{ |i| i.height }].max ]
   output = ChunkyPNG::Image.new(*dims, TRANSPARENT)
-  result = images.each{ |image| output.compose!(image, 0, 0) }
+  images.each{ |image| output.compose!(image, 0, 0) }
   output
 end
 
@@ -309,19 +309,10 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
     print("Invalid theme! ")
     return
   end
-  tile = {}
-  tile_images = Dir.entries("images/tiles").reject{ |f| f == "." || f == ".." }
-  tile_images.each do |i|
-    tile[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/tiles/" + i)
-  end
+  tile = [0, 1, 2, 6, 10, 14, 18, 22, 26, 30].map{ |o| [o, generate_object(o, THEMES.index(theme), false)] }.to_h
   object = OBJECTS.keys.map{ |o| [o, generate_object(o, THEMES.index(theme))] }.to_h
-  # PRE-THEMES CODE
-  #object = {}
-  #object_images = Dir.entries("images/objects").reject{ |f| f == "." || f == ".." }
-  #object_images.each do |i|
-  #  object[i[0..-5].to_i(16)] = ChunkyPNG::Image.from_file("images/objects/" + i)
-  #end
-  image = ChunkyPNG::Image.new(WIDTH, HEIGHT, COLOR)
+  border = BORDERS.to_i(16).to_s(2)[1..-1].chars.map(&:to_i).each_slice(8).to_a
+  image = ChunkyPNG::Image.new(WIDTH, HEIGHT, PALETTE[2, THEMES.index(theme)])
   if !input.empty?
     map = parse_file(filename: input, type: type)
   elsif !data.empty?
@@ -331,7 +322,7 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
   elsif !level.empty? && level.key?(:tiles) && level.key?(:objects)
     map = level
   else
-    print("ERROR: Introduce either an 'input' filename, or map 'data', or 'tiles' and 'objects', or a 'map' array of both.")
+    print("ERROR: Introduce either an 'input' filename, or map 'data', or 'tiles' and 'objects', or a 'level' hash of both.")
     return
   end
   tiles = map[:tiles]
@@ -343,7 +334,7 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
       image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
     end
   end
-  (0 .. COLUMNS + 1).each do |t| # paint borders
+  (0 .. COLUMNS + 1).each do |t| # paint bounding box
     if t <= ROWS
       image.compose!(tile[1], 0, DIM * t)
       image.compose!(tile[1], DIM * (COLUMNS + 1), DIM * t)
@@ -364,6 +355,24 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
         if (t - 2) % 4 == 1 || (t - 2) % 4 == 2 then new_tile = new_tile.flip_vertically end
       end
       image.compose!(new_tile, DIM + DIM * column, DIM + DIM * row)
+    end
+  end
+  edge = ChunkyPNG::Image.from_file('images/b.png')
+  edge = mask(edge, BLACK, PALETTE[1, THEMES.index(theme)])
+  (0 .. ROWS - 2).each do |row| # paint tile borders
+    (0 .. 2 * COLUMNS - 1).each do |col|
+      tile_a = tiles[row][col / 2]
+      tile_b = tiles[row + 1][col / 2]
+      bool = col % 2 ? (border[tile_a][3] + border[tile_b][6]) % 2 : (border[tile_a][2] + border[tile_b][7]) % 2
+      if bool == 1 then image.compose!(edge.rotate_clockwise, DIM * (0.5 * col + 1), DIM * (row + 2)) end
+    end
+  end
+  (0 .. 2 * ROWS - 1).each do |row|
+    (0 .. COLUMNS - 2).each do |col|
+      tile_a = tiles[row / 2][col]
+      tile_b = tiles[row / 2][col + 1]
+      bool = row % 2 ? (border[tile_a][0] + border[tile_b][5]) % 2 : (border[tile_a][1] + border[tile_b][4]) % 2
+      if bool == 1 then image.compose!(edge, DIM * (col + 2), DIM * (0.5 * row + 1)) end
     end
   end
   image.save(output + ".png")
