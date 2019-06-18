@@ -294,7 +294,7 @@ def mask(image, before, after, tolerance = 0.5)
 end
 
 def generate_object(object_id, palette_id, object = true)
-  parts = Dir.entries("images/#{object ? "object" : "tile"}_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }
+  parts = Dir.entries("images/#{object ? "object" : "tile"}_layers").select{ |file| file[0..2] == object_id.to_s(16).upcase.rjust(2, "0") + "-" }.sort
   masks = parts.map{ |part| [part[-5], ChunkyPNG::Image.from_file("images/#{object ? "object" : "tile"}_layers/" + part)] }
   images = masks.map{ |mask| mask(mask[1], BLACK, PALETTE[(object ? OBJECTS[object_id][:pal] : 0) + mask[0].to_i, palette_id]) }
   dims = [ [DIM, *images.map{ |i| i.width }].max, [DIM, *images.map{ |i| i.height }].max ]
