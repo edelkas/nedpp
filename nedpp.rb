@@ -325,7 +325,7 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
     print("ERROR: Introduce either an 'input' filename, or map 'data', or 'tiles' and 'objects', or a 'level' hash of both.")
     return
   end
-  tiles = map[:tiles]
+  tiles = map[:tiles].map(&:dup)
   objects = map[:objects].sort_by{ |o| -OBJECTS[o[0]][:pref] }
   objects.each do |o| # paint objects
     new_object = object[o[0]]
@@ -334,7 +334,10 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
       image.compose!(new_object, coord(o[1]) - new_object.width / 2, coord(o[2]) - new_object.height / 2)
     end
   end
-  (0 .. COLUMNS + 1).each do |t| # paint bounding box
+  tiles.each{ |row| row.unshift(1).push(1) }
+  tiles.unshift([1] * (COLUMNS + 2)).push([1] * (COLUMNS + 2))
+=begin
+  (0 .. COLUMNS + 1).each do |t| # create bounding box
     if t <= ROWS
       image.compose!(tile[1], 0, DIM * t)
       image.compose!(tile[1], DIM * (COLUMNS + 1), DIM * t)
@@ -342,6 +345,7 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
     image.compose!(tile[1], DIM * t, 0)
     image.compose!(tile[1], DIM * t, DIM * (ROWS + 1))
   end
+=end
   tiles.each_with_index do |slice, row| # paint tiles
     slice.each_with_index do |t, column|
       if t == 0 || t == 1 # empty and full tiles
@@ -354,25 +358,25 @@ def generate_image(level: {}, tiles: [], objects: [], data: "", input: "", outpu
         if (t - 2) % 4 >= 2 then new_tile = new_tile.flip_horizontally end
         if (t - 2) % 4 == 1 || (t - 2) % 4 == 2 then new_tile = new_tile.flip_vertically end
       end
-      image.compose!(new_tile, DIM + DIM * column, DIM + DIM * row)
+      image.compose!(new_tile, DIM * column, DIM * row)
     end
   end
   edge = ChunkyPNG::Image.from_file('images/b.png')
   edge = mask(edge, BLACK, PALETTE[1, THEMES.index(theme)])
-  (0 .. ROWS - 2).each do |row| # paint tile borders
-    (0 .. 2 * COLUMNS - 1).each do |col|
+  (0 .. ROWS).each do |row| # paint tile borders
+    (0 .. 2 * (COLUMNS + 2) - 1).each do |col|
       tile_a = tiles[row][col / 2]
       tile_b = tiles[row + 1][col / 2]
       bool = col % 2 ? (border[tile_a][3] + border[tile_b][6]) % 2 : (border[tile_a][2] + border[tile_b][7]) % 2
-      if bool == 1 then image.compose!(edge.rotate_clockwise, DIM * (0.5 * col + 1), DIM * (row + 2)) end
+      if bool == 1 then image.compose!(edge.rotate_clockwise, DIM * (0.5 * col), DIM * (row + 1)) end
     end
   end
-  (0 .. 2 * ROWS - 1).each do |row|
-    (0 .. COLUMNS - 2).each do |col|
+  (0 .. 2 * (ROWS + 2) - 1).each do |row|
+    (0 .. COLUMNS).each do |col|
       tile_a = tiles[row / 2][col]
       tile_b = tiles[row / 2][col + 1]
       bool = row % 2 ? (border[tile_a][0] + border[tile_b][5]) % 2 : (border[tile_a][1] + border[tile_b][4]) % 2
-      if bool == 1 then image.compose!(edge, DIM * (col + 2), DIM * (0.5 * row + 1)) end
+      if bool == 1 then image.compose!(edge, DIM * (col + 1), DIM * (0.5 * row)) end
     end
   end
   image.save(output + ".png")
