@@ -282,12 +282,12 @@ def create_masks(object_id, palette_id, tolerance = 0.1)
 end
 
 # The following two methods are used for theme generation
-def mask(image, before, after, tolerance = 0.5)
+def mask(image, before, after, bg = WHITE, tolerance = 0.5)
   new_image = ChunkyPNG::Image.new(image.width, image.height, TRANSPARENT)
   image.width.times{ |x|
     image.height.times{ |y|
       score = euclidean_distance_rgba(image[x,y], before).to_f / MAX_EUCLIDEAN_DISTANCE_RGBA
-      if score < tolerance then new_image[x,y] = after end
+      if score < tolerance then new_image[x,y] = ChunkyPNG::Color.compose(after, bg) end
     }
   }
   new_image
