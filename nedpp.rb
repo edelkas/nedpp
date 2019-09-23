@@ -1,5 +1,22 @@
+# Ned++ - A work in progress, third party tool for N++, with the following goals:
+#
+# 1) PARSE levels from a multitude of different formats.
+# 2) SAVE levels into a multitude of different formats.
+# 3) As a consequence, CONVERT between a multitude of different formats.
+# 4) PREVIEW levels by generating screenshot in any palette.
+# 5) CREATE or EDIT levels.
+# 6) Perform N-ART (e.g. image to map).
+# 7) Manual demo builder.
+# 8) Etc. (suggestions?).
+#
+# Author: Eddy, 2019.
+
 require 'chunky_png'
 include ChunkyPNG::Color
+
+# <---------------------------------------------------------------------------->
+#                                  CONSTANTS
+# <---------------------------------------------------------------------------->
 
 # 'pref' is the drawing preference when for overlaps, the lower the better
 # 'att' is the number of attributes they have in the old format (in the new one it's always 5)
@@ -73,6 +90,10 @@ class Array
   def rjust(n, x); Array.new([0, n-length].max, x)+self end
   def ljust(n, x); dup.fill(x, length...n) end
 end
+
+# <---------------------------------------------------------------------------->
+#                               PARSING MAPS
+# <---------------------------------------------------------------------------->
 
 # new - current map format, used by userlevels, attract files...
 # old - old map format, used by Metanet levels
@@ -175,6 +196,10 @@ def parse_multifolder(input: "", type: "old")
   }.to_h
 end
 
+# <---------------------------------------------------------------------------->
+#                                SAVING MAPS
+# <---------------------------------------------------------------------------->
+
 # locked door and trap door switches are not counted in N++!
 def generate_map(tiles: [], objects: [], type: "new")
   case type
@@ -206,7 +231,7 @@ def generate_map(tiles: [], objects: [], type: "new")
   map_data
 end
 
-def generate_file(tiles: [], objects: [], mode: "solo", title: "Generated from file", folder: "", type: "level")
+def generate_file(tiles: [], objects: [], demo: [], mode: "solo", title: "Generated from file", folder: "", type: "level")
   data = ""
   if folder[-1] != "/" && !folder.empty? then folder = folder + "/" end
   case type
@@ -240,6 +265,19 @@ def generate_folder(maps: [], folder: "generated maps", mode: "solo", type: "lev
     generate_file(tiles: m[:tiles], objects: m[:objects], title: title, mode: mode, type: type, folder: folder)
   }
 end
+
+# <---------------------------------------------------------------------------->
+#                           MANUAL DEMO BUILDING
+# <---------------------------------------------------------------------------->
+
+def build(tiles: [], objects: [], mode: "solo", type: "attract", title: "Generated from file")
+  # Some code to generate demo
+  generate_file(tiles: tiles, objects: objects,)
+end
+
+# <---------------------------------------------------------------------------->
+#                             GRAPHIC FUNCTIONS
+# <---------------------------------------------------------------------------->
 
 def coord(n) # transform N++ coordinates into pixel coordinates
   DIM * n.to_f / 4
