@@ -1,15 +1,20 @@
-# Ned++ - A work in progress, third party tool for N++, with the following goals:
+################################################################################
+#                                   Ned++
+# @desc: A work in progress, third party tool for N++, with the following goals:
 #
 # 1) PARSE levels from a multitude of different formats.
 # 2) SAVE levels into a multitude of different formats.
-# 3) As a consequence, CONVERT between a multitude of different formats.
-# 4) PREVIEW levels by generating screenshot in any palette.
+# 3) CONVERT between a multitude of different formats.
+# 4) PREVIEW levels by generating screenshots in any palette.
 # 5) CREATE or EDIT levels.
 # 6) Perform N-ART (e.g. image to map).
 # 7) Manual demo builder.
 # 8) Etc. (suggestions?).
 #
-# Author: Eddy, 2019.
+# @author: Eddy.
+# @date: 2020-02-01.
+#
+################################################################################
 
 require 'chunky_png'
 include ChunkyPNG::Color
@@ -264,6 +269,22 @@ def generate_folder(maps: [], folder: "generated maps", mode: "solo", type: "lev
     title = indexize ? i.to_s.rjust(padding,"0") + " " + m[:title] : m[:title]
     generate_file(tiles: m[:tiles], objects: m[:objects], title: title, mode: mode, type: type, folder: folder)
   }
+end
+
+# <---------------------------------------------------------------------------->
+#                              CONVERTING MAPS
+# <---------------------------------------------------------------------------->
+
+def convert_file(input: "attract", output: nil, input_type: "attract", output_type: "level")
+  if output.nil? then output = input + "_" + output_type end
+  outputRoot = output
+  i = 1
+  while File.exists?(output)
+    output = outputRoot + i.to_s
+    i += 1
+  end
+  map = parse_file(filename: input, type: input_type)
+  generate_file(tiles: map[:tiles], objects: map[:objects], title: output, type: output_type)
 end
 
 # <---------------------------------------------------------------------------->

@@ -1,7 +1,8 @@
 ### Color list details
 Originally, each theme has a palette folder, each palette has one tga image
 per object, and each image has a horizontal sequence of 64x64 tiles, one for
-each differently colored portion of the object.
+each differently colored portion of the object. Actually, only the (32,31)
+pixel is used to check the color, the rest doesn't matter.
 
 The following is a list of tables. The first one contains the list of objects
 with their ID, name, number of different colors, and the corresponding palette
@@ -128,13 +129,13 @@ BA | Background     | 6 | background.tga
 19-2 | Deathball outter circle
 1A-0 | Microdrone interior.
 1A-1 | Microdrone border.
-1B-0 | Whiteball.
-1B-1 | Whiteball.
+1B-0 | Whiteball background.
+1B-1 | Whiteball eye.
 1C-0 | Shove thwump interior.
 1C-1 | Shove thwump ray.
 1C-2 | Shove thwump armor.
-BA-0 | Tile interior.
-BA-1 | Tile border.
+BA-0 | Tile.
+BA-1 | Tile outline.
 BA-2 | Background.
 BA-3 | ?
 BA-4 | ?
