@@ -257,9 +257,7 @@ def generate_file(tiles: [], objects: [], demo: [], mode: "solo", title: "Genera
     print("ERROR: Incorrect type (level, attract, old).")
     return 0
   end
-  File.open(folder + title.tr("/", " ").tr("\\", " "), "w") do |f|
-    f.write(data)
-  end
+  File.binwrite(folder + title.tr("/", " ").tr("\\", " "), data)
 end
 
 def generate_folder(maps: [], folder: "generated maps", mode: "solo", type: "level", indexize: false)
