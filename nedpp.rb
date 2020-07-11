@@ -228,7 +228,21 @@ def generate_map(tiles: [], objects: [], type: "new")
     }
     map_data = tile_data + object_counts.ljust(80, "\x00") + object_data
   when "old"
-
+    header = "00000000"
+    tile_data = tiles.flatten.map{ |t| t.to_s(16).rjust(2,"0").reverse }.join
+    objs = objects.map{ |o| o.dup }
+    doors_exit = objs.select{ |o| o[0] == 3 }.zip(objs.select{ |o| o[0] == 4 }).map{ |p| [3, p[0][1], p[0][2], p[1][1], p[1][2]] }
+    doors_lock = objs.select{ |o| o[0] == 6 }.zip(objs.select{ |o| o[0] == 7 }).map{ |p| [6, p[0][1], p[0][2], p[0][3], p[1][1], p[1][2]] }
+    doors_trap = objs.select{ |o| o[0] == 8 }.zip(objs.select{ |o| o[0] == 9 }).map{ |p| [8, p[0][1], p[0][2], p[0][3], p[1][1], p[1][2]] }
+    objs = objs.select{ |o| ![3,4,6,7,8,9].include?(o[0]) }.+(doors_exit).+(doors_lock).+(doors_trap).sort_by{ |o| o[0] }
+    entities = (0..25).to_a.map{ |id| [id, []] }.to_h
+    objs.each{ |o|
+      s = o[1..OBJECTS[o[0]][:att]].map{ |a| a.to_s(16).rjust(2, "0").reverse }.join
+      entities[OBJECTS[o[0]][:old]].push(s)
+    }
+    object_data = entities.map{ |k, v| v.size.to_s(16).rjust(4, "0").scan(/../m).map(&:reverse).join + v.join }.join
+    footer = "00000000"
+    map_data = header + tile_data + object_data + footer
   else
     print("ERROR: Incorrect type (new, old).")
     return 0
@@ -236,7 +250,7 @@ def generate_map(tiles: [], objects: [], type: "new")
   map_data
 end
 
-def generate_file(tiles: [], objects: [], demo: [], mode: "solo", title: "Generated from file", folder: "", type: "level")
+def generate_file(tiles: [], objects: [], demo: [], mode: "solo", title: "Autogen", folder: "", type: "level")
   data = ""
   if folder[-1] != "/" && !folder.empty? then folder = folder + "/" end
   case type
@@ -252,7 +266,9 @@ def generate_file(tiles: [], objects: [], demo: [], mode: "solo", title: "Genera
   when "attract"
 
   when "old"
-
+    data << "$#{title}#"
+    data << generate_map(tiles: tiles, objects: objects, type: "old")
+    data << "#"
   else
     print("ERROR: Incorrect type (level, attract, old).")
     return 0
@@ -282,7 +298,7 @@ def convert_file(input: "attract", output: nil, input_type: "attract", output_ty
     i += 1
   end
   map = parse_file(filename: input, type: input_type)
-  generate_file(tiles: map[:tiles], objects: map[:objects], title: output, type: output_type)
+  generate_file(tiles: map[:tiles], objects: map[:objects], title: map[:title], type: output_type)
 end
 
 # <---------------------------------------------------------------------------->
@@ -291,7 +307,7 @@ end
 
 def build(tiles: [], objects: [], mode: "solo", type: "attract", title: "Generated from file")
   # Some code to generate demo
-  generate_file(tiles: tiles, objects: objects,)
+  #generate_file(tiles: tiles, objects: objects,)
 end
 
 # <---------------------------------------------------------------------------->
